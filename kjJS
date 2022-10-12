@@ -1,0 +1,222 @@
+// ==UserScript==
+// @name         视频快进
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       hx
+// @match        *://gxcj.eec-cn.com/*
+// @match        *://*/-*
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAACOUlEQVRoge3YSWsVQRSG4cdxIRpnnHbuBBWMIDjGxBmHvfi3/AduBREFRcUBxHElLt0IihKNerO4qBmIi0pI1O6b6qruxYV+d11V3+3znarbhzq0tLS0tGSwLHLdCmzDSvxMeM9anMZ6fErQl7IkYs0mDAnBw0c8w3TkOw7iNjbMPt/AFWmJ+I+YHTiG1QueB7ARHzATob+JnQued+EArmMqLsxylkasWVcwtlXYlZgE7C0YO4VbWBWh70mMgbJjtgXDWL6Ivmz+BO76e3crE2OgF5txXPiTp3AUd7AmNYBcAwQTQ9JNHJFhog4D5Js4LJgYqCqsywD5xynJRJ0GCDVjxHzNqMohPBQKXhR1GyAUrGHpJvbjvvnC15MmDJh9ec5ORJtoygDhGIxk6AfxQKj6pTRpgApnuYR9uNfrd5o2UAeDuFY22Q8G4Dz2FE30iwHYXTTYTwZGiwb7xcB7PC2a6AcDXVzGRNFk0wZyb1xdXMSLsgWLXUZymMKTDH0XF/C416KmDMwF/yVR3xU+nYsmoAkDk0LWxhL14ziH5zGL6zZQR/Bn9Tjz/1KngUk8wrdE/TjO4GUVUV0GJoTMpwbfEYJ/VVVYh4EJIfPfE/Udoe34OkWcWwdyg/8hNLmSgidvB34L99dOon4MJ/EmI4aoHShqwlYJvqgb/VXozGUFT1xvc0Zorc/xSzg2sZmfFj6Nc4wKmX8bqe9JTHsddmC7kPl3qrfGLwmVdQxX8bmivqWlpaWlpZA/gURim7NG7x0AAAAASUVORK5CYII=
+// @license      https://github.com/1024Vip/kj
+// ==/UserScript==
+
+(function() {
+
+    window.onload = function () {
+        setTimeout(() => {
+            var ele = document.querySelector("video");
+            if (ele == null) {
+                console.log('无视频');
+                return;
+            }
+            var PF = 0;
+            //播放
+            function playV() {
+                ele.play();
+            }
+
+            //暂停
+            function pauseV() {
+                ele.pause();
+            }
+            //静音  点击第一次静音再点击关闭静音
+            function mutedV() {
+                if (ele.muted === true) {
+                    ele.muted = false;
+                } else {
+                    ele.muted = true;
+                }
+            }
+
+            // //全屏
+            // function fullScreen() {
+            //     if (ele.mozRequestFullScreen) {
+            //         ele.mozRequestFullScreen(); //火狐浏览器
+            //     } else if (ele.webkitRequestFullscreen) {
+            //         ele.webkitRequestFullscreen(); //谷歌浏览器
+            //     } else if (ele.oRequestFullscreen) {
+            //         ele.oRequestFullscreen(); //opera浏览器
+            //     } else if (ele.msRequestFullscreen) {
+            //         ele.msRequestFullscreen(); //ie浏览器
+            //     } else if (ele.requestFullscreen) {
+            //         ele.requestFullscreen();
+            //     }
+            // }
+
+            // //加速
+            // function goV() {
+            //     var goUl = document.getElementById("goUl");
+            //     if (goUl.style.display === "inline") {
+            //         goUl.style.display = "none";
+            //     } else {
+            //         goUl.style.display = "inline";
+            //     }
+
+            //     goUl.onclick = function() {
+            //         var li = document.getElementsByTagName("li");
+            //         for (var i = 0; i < li.length; i++) {
+            //             (function(x) {
+            //                 li[x].onclick = function() {
+            //                     ele.play(); //调速时直接播放
+            //                     ele.playbackRate = li[x].innerHTML;
+            //                 }
+            //             })(i);
+            //         }
+            //     }
+            // }
+
+            // //减速
+            // function backV() {
+            //     ele.play();
+            //     ele.playbackRate = 0.5;
+            // }
+
+            //快进5秒
+            function goFiveV() {
+                ele.play();
+                ele.currentTime = ele.currentTime + 5;
+            }
+
+            //后退5秒
+            function backFiveV() {
+                if (ele.currentTime != 0) {
+                    ele.currentTime = ele.currentTime - 5;
+                }
+            }
+            var volumeNum = 0;
+            //改变音量
+            function volumeJ() {
+                volumeNum = ele.volume;
+                volumeNum += 0.1;
+                ele.volume = volumeNum;
+                volumeNum = ele.volume;
+            }
+            //改变音量
+            function volumeJian() {
+                volumeNum = ele.volume;
+                volumeNum -= 0.1;
+                ele.volume = volumeNum;
+                volumeNum = ele.volume;
+            }
+
+            //获取视频总时间  在视频加载完成后触发该函数
+            ele.onloadedmetadata = function () {
+                var totalTime = document.getElementById("totalTime");
+                var allTime = ele.duration;
+                var m = Math.floor(allTime % 3600 / 60);
+                var s = Math.floor(allTime % 60);
+                m = m >= 10 ? m : '0' + m;
+                s = s >= 10 ? s : '0' + s;
+                totalTime.innerHTML = m + ':' + s;
+            }
+
+            // //视频播放位置发生改变时触发该函数
+            // ele.ontimeupdate = function() {
+            //     var progress = document.getElementById("progress");
+            //     var curTime = document.getElementById("curTime");
+            //     progress.value = 100 * ele.currentTime / ele.duration; ///this.totaltime;
+            //     var time = ele.currentTime;
+            //     var m = Math.floor(time % 3600 / 60);
+            //     var s = Math.floor(time % 60);
+            //     m = m >= 10 ? m : '0' + m;
+            //     s = s >= 10 ? s : '0' + s;
+            //     curTime.innerHTML = m + ':' + s;
+            // }
+
+            function onKeyDown() {
+                document.onkeydown = function (event) {
+                    var event = event || window.event;
+                    ele = document.querySelector("video");
+                    if (ele == null) {
+                        return;
+                    }
+                    ele?.addEventListener("play", () => { PF = 1; });
+                    ele?.addEventListener("pause", () => { PF = 2; });
+                    // 为了方便理解可以写成这种形式var event=event?event:window.event实现浏览器的兼容
+                    var keycode = event.which || event.keyCode;
+                    // 火狐不支持event.keyCode支持event.which
+
+                    if (event.ctrlKey && keycode === 39) {
+                        ele.currentTime = ele.duration - 1;
+                        return;
+                    }
+                    switch (keycode) {
+                        case 38:
+                            volumeJ();
+                            console.log("上"); break;
+                        case 39:
+                            goFiveV();
+                            console.log("右"); break;
+                        case 40:
+                            volumeJian();
+                            console.log("下"); break;
+                        case 37:
+                            backFiveV();
+                            console.log("左"); break;
+                        case 32:
+                            if (PF === 1)
+                                pauseV();
+                            else
+                                playV();
+                            console.log("空格"); break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            onKeyDown();
+        }, 2345)
+    }
+    /*   //reurn false 禁止函数内部执行其他的事件或者方法
+  var vol = 0.1;  //1代表100%音量，每次增减0.1
+     var time = 10; //单位秒，每次增减10秒
+     var videoElement = document.querySelector("video");
+     document.onkeyup = function (event) {//键盘事件
+
+         console.log("keyCode:" + event.keyCode);
+         var e = event || window.event || arguments.callee.caller.arguments[0];
+
+         //鼠标上下键控制视频音量
+         if (e && e.keyCode === 38) {
+
+             // 按 向上键
+             videoElement.volume !== 1 ? videoElement.volume += vol : 1;
+             return false;
+
+         } else if (e && e.keyCode === 40) {
+
+             // 按 向下键
+             videoElement.volume !== 0 ? videoElement.volume -= vol : 1;
+             return false;
+
+         } else if (e && e.keyCode === 37) {
+
+             // 按 向左键
+             videoElement.currentTime !== 0 ? videoElement.currentTime -= time : 1;
+             return false;
+
+         } else if (e && e.keyCode === 39) {
+
+             // 按 向右键
+             videoElement.volume !== videoElement.duration ? videoElement.currentTime += time : 1;
+             return false;
+
+         } else if (e && e.keyCode === 32) {
+
+             // 按空格键 判断当前是否暂停
+             videoElement.paused === true ? videoElement.play() : videoElement.pause();
+             return false;
+         }
+
+     }; */
+})();
